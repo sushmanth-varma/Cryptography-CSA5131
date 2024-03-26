@@ -1,0 +1,48 @@
+#include <stdio.h>
+
+int main() {
+    // Frequencies of the most frequent and second most frequent letters
+    int freq_most_frequent = 0, freq_second_most_frequent = 0;
+
+    // The most frequent and second most frequent letters
+    char most_frequent = 'B', second_most_frequent = 'U';
+
+    // Frequencies of all letters in the ciphertext
+    int frequencies[26] = {0};
+
+    // Ciphertext
+    char ciphertext[] = "your ciphertext goes here";
+
+    // Count frequencies of each letter in the ciphertext
+    for (int i = 0; ciphertext[i] != '\0'; i++) {
+        char ch = ciphertext[i];
+        if (ch >= 'A' && ch <= 'Z') {
+            frequencies[ch - 'A']++;
+        } else if (ch >= 'a' && ch <= 'z') {
+            frequencies[ch - 'a']++;
+        }
+    }
+
+    // Find the most frequent and second most frequent letters
+    for (int i = 0; i < 26; i++) {
+        if (frequencies[i] > freq_most_frequent) {
+            freq_second_most_frequent = freq_most_frequent;
+            second_most_frequent = most_frequent;
+            freq_most_frequent = frequencies[i];
+            most_frequent = 'A' + i;
+        } else if (frequencies[i] > freq_second_most_frequent && frequencies[i] != freq_most_frequent) {
+            freq_second_most_frequent = frequencies[i];
+            second_most_frequent = 'A' + i;
+        }
+    }
+
+    // Compute key 'b' using the known plaintext and ciphertext
+    int b = (most_frequent - 'B') % 26;
+
+    // Compute key 'a' using the known plaintext and ciphertext
+    int a = ((second_most_frequent - 'U') - b + 26) % 26;
+
+    printf("The affine cipher key is (a, b) = (%d, %d)\n", a, b);
+
+    return 0;
+}
