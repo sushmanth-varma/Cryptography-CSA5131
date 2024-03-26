@@ -1,0 +1,33 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+int main() {
+    char plaintext[100];
+    char ciphertext[26];
+    char alphabet[] = "abcdefghijklmnopqrstuvwxyz";
+    int i;
+    // Input the ciphertext alphabet mapping
+    printf("Enter the ciphertext alphabet mapping (26 unique letters): ");
+    fgets(ciphertext, sizeof(ciphertext), stdin);
+    // Remove the trailing newline character
+    ciphertext[strcspn(ciphertext, "\n")] = '\0';
+    // Encrypt the plaintext using the monoalphabetic substitution cipher
+   printf("Enter the plaintext: ");
+    fgets(plaintext, sizeof(plaintext), stdin);
+    // Encrypt the plaintext using the monoalphabetic substitution cipher
+    printf("Encrypted text: ");
+    for (i = 0; plaintext[i] != '\0'; i++) {
+        char ch = plaintext[i];
+        if (isalpha(ch) && islower(ch)) {
+            int index = ch - 'a';
+            printf("%c", tolower(ciphertext[index]));
+        } else if (isalpha(ch) && isupper(ch)) {
+            int index = ch - 'A';
+            printf("%c", toupper(ciphertext[index]));
+        } else {
+            printf("%c", ch);
+        }
+    }
+    printf("\n");
+    return 0;
+}
