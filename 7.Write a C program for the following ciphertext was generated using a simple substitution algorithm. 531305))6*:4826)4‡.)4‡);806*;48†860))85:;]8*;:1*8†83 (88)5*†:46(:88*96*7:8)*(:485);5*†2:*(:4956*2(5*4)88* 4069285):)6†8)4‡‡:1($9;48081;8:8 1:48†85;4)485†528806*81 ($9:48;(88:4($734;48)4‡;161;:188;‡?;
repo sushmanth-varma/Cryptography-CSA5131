@@ -1,37 +1,26 @@
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 
 int main() {
-    char ciphertext[] = "531305))6*:4826)4‡.)4‡);806*;48†860))85:;]8*;:1*8†83 (88)5*†:46(:88*96*7:8)*(:485);5*†2:*(:4956*2(5*4)88*4069285):)6†8)4‡‡:1($9;48081;8:8 1:48†85;4)485†528806*81 ($9:48;(88:4($734;48)4‡;161;:188;‡?;";
-    int frequencies[26] = {0};
-    int totalCharacters = 0;
-    int nonAlphabeticCharacters = 0;
+    char ciphertext[] = "531305))6*:4826)4‡.)4‡);806*;48†860))85:;]8*;:1*8†83 (88)5*†:46(:88*96*7:8)*(:485);5*†2:*(:4956*2(5*4)88* 4069285):)6†8)4‡‡:1($9;48081;8:8 1:48†85;4)485†528806*81 ($9:48;(88:4($734;48)4‡;161;:188;‡?;";
+    
+    // Mapping characters based on analysis
+    char mapping[128];
+    strcpy(mapping, "abcdefghijklmnopqrstuvwxyz");
+    mapping['8'] = 'e';
+    mapping['5'] = 't';
+    mapping['4'] = 'h';
 
-    // Count the frequency of each letter
-    for (int i = 0; ciphertext[i] != '\0'; i++) {
-        char ch = toupper(ciphertext[i]);
-        if (ch >= 'A' && ch <= 'Z') {
-            frequencies[ch - 'A']++;
-            totalCharacters++;
+    // Decrypt the ciphertext
+    printf("Decrypted message:\n");
+    for (int i = 0; i < strlen(ciphertext); i++) {
+        if (ciphertext[i] >= '0' && ciphertext[i] <= '9') {
+            printf("%c", mapping[ciphertext[i]]);
         } else {
-            nonAlphabeticCharacters++;
+            printf("%c", ciphertext[i]);
         }
     }
-
-    printf("Frequency analysis of the ciphertext:\n");
-    printf("-------------------------------------\n");
-    printf("Total characters: %d\n", totalCharacters);
-    printf("Non-alphabetic characters: %d\n", nonAlphabeticCharacters);
     printf("\n");
-    printf("Letter   Frequency   Percentage\n");
-    printf("--------------------------------\n");
-
-    // Print the frequency of each letter
-    for (int i = 0; i < 26; i++) {
-        double percentage = (double)frequencies[i] / totalCharacters * 100;
-        printf("   %c       %4d        %.2f%%\n", 'A' + i, frequencies[i], percentage);
-    }
 
     return 0;
 }
