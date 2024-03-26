@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MATRIX_SIZE 5
+
+int main() {
+    char matrix[MATRIX_SIZE][MATRIX_SIZE];
+    char keyword[] = "MFHIJKUNOPQZVWXYELARGDSTBC";
+    char plaintext[] = "MUSTSEEYOUOVERCADOGANWESTCOMINGATONCE";
+    char encrypted[100];
+    int i, j;
+
+    // Initialize the Playfair matrix with the keyword
+    int k = 0;
+    for (i = 0; i < MATRIX_SIZE; i++) {
+        for (j = 0; j < MATRIX_SIZE; j++) {
+            matrix[i][j] = keyword[k++];
+        }
+    }
+
+    // Encrypt the plaintext
+    int index = 0;
+    for (i = 0; i < strlen(plaintext); i++) {
+        if (isalpha(plaintext[i])) {
+            plaintext[i] = toupper(plaintext[i]);
+            encrypted[index++] = plaintext[i];
+            if (plaintext[i] == 'J') {
+                encrypted[index++] = 'I';
+            }
+        }
+    }
+    encrypted[index] = '\0';
+
+    // Handle repeated characters and odd-length plaintext
+    i = 0;
+    while (i < index) {
+        if (i == index - 1 || encrypted[i] == encrypted[i + 1]) {
+            // Add an 'X' between duplicate characters or at the end if the number of characters is odd
+            encrypted[index++] = 'X';
+            encrypted[index] = '\0';
+        } else {
+            // Encrypt pairs of characters
+            char ch1 = encrypted[i];
+            char ch2 = encrypted[i + 1];
+            int row1, col1, row2, col2;
+            for (j = 0; j < MATRIX_SIZE; j++) {
+                for (int k = 0; k < MATRIX_SIZE; k++) {
+                    if (matrix[j][k] == ch1) {
+                        row1 = j;
+                        col1 = k;
+                    }
+                    if (matrix[j][k] == ch2) {
+                        row2 = j;
+                        col2 = k;
+                    }
+                }
+            }
+            if (row1 == row2) {
+                // Same row, take characters to the right, wrap around if necessary
+                encrypted[i] = matrix[row1][(col1 + 1) % MATRIX_SIZE];
+                encrypted[i + 1] = matrix[row2][(col2 + 1) % MATRIX_SIZE];
+            } else if (col1 == col2) {
+                // Same column, take characters below, wrap around if necessary
+                encrypted[i] = matrix[(row1 + 1) % MATRIX_SIZE][col1];
+                encrypted[i + 1] = matrix[(row2 + 1) % MATRIX_SIZE][col2];
+            } else {
+                // Different row and column, form rectangle and take opposite corners
+                encrypted[i] = matrix[row1][col2];
+                encrypted[i + 1] = matrix[row2][col1];
+            }
+            i += 2;
+        }
+    }
+
+    // Print the encrypted text
+    printf("Plaintext: %s\n", plaintext);
+    printf("Keyword: %s\n", keyword);
+    printf("Encrypted: %s\n", encrypted);
+
+    return 0;
+}
