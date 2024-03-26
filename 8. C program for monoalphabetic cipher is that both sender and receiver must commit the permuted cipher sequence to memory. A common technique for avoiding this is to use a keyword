@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+int main() {
+    char keyword[] = "CIPHER";
+    char plaintext[] = "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG";
+    char ciphertext[100];
+    char key[26];
+    int i, j, k = 0;
+
+    // Generate the key based on the keyword
+    for (i = 0; i < 26; i++) {
+        char ch = 'A' + i;
+        int found = 0;
+        for (j = 0; keyword[j] != '\0'; j++) {
+            if (toupper(keyword[j]) == ch) {
+                found = 1;
+                break;
+            }
+        }
+        if (!found) {
+            key[k++] = ch;
+        }
+    }
+    key[k] = '\0';
+
+    // Encrypt the plaintext using the generated key
+    for (i = 0; plaintext[i] != '\0'; i++) {
+        if (isalpha(plaintext[i])) {
+            if (isupper(plaintext[i])) {
+                ciphertext[i] = key[plaintext[i] - 'A'];
+            } else {
+                ciphertext[i] = tolower(key[plaintext[i] - 'a']);
+            }
+        } else {
+            ciphertext[i] = plaintext[i];
+        }
+    }
+    ciphertext[i] = '\0';
+
+    // Print the encrypted text
+    printf("Plaintext: %s\n", plaintext);
+    printf("Keyword: %s\n", keyword);
+    printf("Generated Key: %s\n", key);
+    printf("Ciphertext: %s\n", ciphertext);
+
+    return 0;
+}
