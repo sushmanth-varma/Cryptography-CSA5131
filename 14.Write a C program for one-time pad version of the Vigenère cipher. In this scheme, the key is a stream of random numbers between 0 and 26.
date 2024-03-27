@@ -1,30 +1,35 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #include <string.h>
 
 int main() {
-    char plaintext[] = "Hello, world!";
-    int plaintextLength = strlen(plaintext);
-    int keyStream[plaintextLength];
-
-    // Generate random key stream
-    srand(time(NULL));
-    for (int i = 0; i < plaintextLength; i++) {
-        keyStream[i] = rand() % 26; // Generate random numbers between 0 and 25
-    }
+    char plaintext[] = "send more money";
+    int keyStream[] = {9017, 23, 15, 21, 14, 11, 11, 289};
+    int keyLength = sizeof(keyStream) / sizeof(keyStream[0]);
+    char ciphertext[keyLength];
 
     // Encrypt plaintext using one-time pad Vigenère cipher
-    for (int i = 0; i < plaintextLength; i++) {
-        if (plaintext[i] >= 'A' && plaintext[i] <= 'Z') {
-            plaintext[i] = 'A' + (plaintext[i] - 'A' + keyStream[i]) % 26;
-        } else if (plaintext[i] >= 'a' && plaintext[i] <= 'z') {
-            plaintext[i] = 'a' + (plaintext[i] - 'a' + keyStream[i]) % 26;
-        }
+    for (int i = 0; i < keyLength; i++) {
+        ciphertext[i] = (plaintext[i] - 'a' + keyStream[i]) % 26 + 'a';
     }
 
     // Print encrypted ciphertext
-    printf("Ciphertext: %s\n", plaintext);
+    printf("Ciphertext: %s\n", ciphertext);
+
+    // Decrypt ciphertext to find the key
+    char targetPlaintext[] = "cash not needed";
+    int targetLength = strlen(targetPlaintext);
+    int key[targetLength];
+
+    for (int i = 0; i < targetLength; i++) {
+        key[i] = (targetPlaintext[i] - 'a' - (ciphertext[i] - 'a') + 26) % 26;
+    }
+
+    // Print the key
+    printf("Key: ");
+    for (int i = 0; i < targetLength; i++) {
+        printf("%d ", key[i]);
+    }
+    printf("\n");
 
     return 0;
 }
