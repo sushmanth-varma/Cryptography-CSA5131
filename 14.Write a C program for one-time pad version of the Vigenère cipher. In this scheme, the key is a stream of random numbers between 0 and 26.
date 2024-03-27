@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+
+int main() {
+    char plaintext[] = "Hello, world!";
+    int plaintextLength = strlen(plaintext);
+    int keyStream[plaintextLength];
+
+    // Generate random key stream
+    srand(time(NULL));
+    for (int i = 0; i < plaintextLength; i++) {
+        keyStream[i] = rand() % 26; // Generate random numbers between 0 and 25
+    }
+
+    // Encrypt plaintext using one-time pad Vigenère cipher
+    for (int i = 0; i < plaintextLength; i++) {
+        if (plaintext[i] >= 'A' && plaintext[i] <= 'Z') {
+            plaintext[i] = 'A' + (plaintext[i] - 'A' + keyStream[i]) % 26;
+        } else if (plaintext[i] >= 'a' && plaintext[i] <= 'z') {
+            plaintext[i] = 'a' + (plaintext[i] - 'a' + keyStream[i]) % 26;
+        }
+    }
+
+    // Print encrypted ciphertext
+    printf("Ciphertext: %s\n", plaintext);
+
+    return 0;
+}
