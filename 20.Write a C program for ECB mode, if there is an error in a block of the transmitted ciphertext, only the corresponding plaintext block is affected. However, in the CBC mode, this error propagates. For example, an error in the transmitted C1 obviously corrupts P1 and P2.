@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <string.h>
+
+void ecbMode(char *plaintext, char *ciphertext, int block_size) {
+    int num_blocks = strlen(plaintext) / block_size;
+    int i, j, k;
+
+    for (i = 0; i < num_blocks; i++) {
+        for (j = 0; j < block_size; j++) {
+            ciphertext[i * block_size + j] = plaintext[i * block_size + j] ^ 0xFF; // Simulating an error
+        }
+    }
+    ciphertext[i * block_size] = '\0';
+}
+
+void cbcMode(char *plaintext, char *ciphertext, int block_size) {
+    int num_blocks = strlen(plaintext) / block_size;
+    int i, j, k;
+    char feedback = 0;
+
+    for (i = 0; i < num_blocks; i++) {
+        for (j = 0; j < block_size; j++) {
+            if (j == 0) {
+                ciphertext[i * block_size + j] = plaintext[i * block_size + j] ^ feedback ^ 0xFF; // Simulating an error
+                feedback = ciphertext[i * block_size + j];
+            } else {
+                ciphertext[i * block_size + j] = plaintext[i * block_size + j] ^ ciphertext[i * block_size + j - 1] ^ 0xFF; // Simulating an error
+            }
+        }
+    }
+    ciphertext[i * block_size] = '\0';
+}
+
+int main() {
+    char plaintext[] = "This is a test message for ECB and CBC modes.";
+    char ecb_ciphertext[1000], cbc_ciphertext[1000];
+    int block_size = 8; // Assuming 8-byte blocks for simplicity
+
+    printf("Original Plaintext: %s\n\n", plaintext);
+
+    // ECB mode encryption with simulated error
+    ecbMode(plaintext, ecb_ciphertext, block_size);
+    printf("ECB Mode Ciphertext with Error: %s\n", ecb_ciphertext);
+
+    // CBC mode encryption with simulated error
+    cbcMode(plaintext, cbc_ciphertext, block_size);
+    printf("\nCBC Mode Ciphertext with Error: %s\n", cbc_ciphertext);
+
+    return 0;
+}
