@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <string.h>
+
+#define SIZE 5
+
+char playfairMatrix[SIZE][SIZE] = {
+    {'M', 'F', 'H', 'I', 'J'},
+    {'U', 'N', 'O', 'P', 'Q'},
+    {'Z', 'V', 'W', 'X', 'Y'},
+    {'E', 'L', 'A', 'R', 'G'},
+    {'D', 'S', 'T', 'B', 'C'}
+};
+
+int main() {
+    char message[] = "Must see you over Cadogan West. Coming at once.";
+    int len = strlen(message);
+    
+    // Ensure message length is even
+    if (len % 2 != 0) {
+        strcat(message, "X");
+        len++;
+    }
+
+    char encrypted[len];
+    int i, row1, col1, row2, col2, r1, c1, r2, c2;
+
+    for (i = 0; i < len; i += 2) {
+        char ch1 = message[i];
+        char ch2 = message[i + 1];
+
+        // Find positions of characters in the matrix
+        int found1 = 0, found2 = 0;
+        for (row1 = 0; row1 < SIZE && !found1; row1++) {
+            for (col1 = 0; col1 < SIZE && !found1; col1++) {
+                if (playfairMatrix[row1][col1] == ch1) {
+                    found1 = 1;
+                }
+            }
+        }
+
+        for (row2 = 0; row2 < SIZE && !found2; row2++) {
+            for (col2 = 0; col2 < SIZE && !found2; col2++) {
+                if (playfairMatrix[row2][col2] == ch2) {
+                    found2 = 1;
+                }
+            }
+        }
+
+        if (row1 == row2) { // Same row
+            encrypted[i] = playfairMatrix[row1][(col1 + 1) % SIZE];
+            encrypted[i + 1] = playfairMatrix[row2][(col2 + 1) % SIZE];
+        } else if (col1 == col2) { // Same column
+            encrypted[i] = playfairMatrix[(row1 + 1) % SIZE][col1];
+            encrypted[i + 1] = playfairMatrix[(row2 + 1) % SIZE][col2];
+        } else { // Rectangle case
+            r1 = row1;
+            c1 = col2;
+            r2 = row2;
+            c2 = col1;
+            encrypted[i] = playfairMatrix[r1][c1];
+            encrypted[i + 1] = playfairMatrix[r2][c2];
+        }
+    }
+
+    encrypted[len] = '\0';
+    printf("Encrypted message: %s\n", encrypted);
+
+    return 0;
+}
