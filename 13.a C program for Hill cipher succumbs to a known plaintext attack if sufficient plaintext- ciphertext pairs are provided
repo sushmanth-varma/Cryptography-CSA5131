@@ -1,0 +1,28 @@
+#include <stdio.h>
+
+// Define the key matrix size
+#define SIZE 2
+
+int main() {
+    // Known plaintext-ciphertext pairs
+    int plaintext[2][1] = {{0}, {1}}; // Assuming A=0, B=1
+    int ciphertext[2][1] = {{7}, {3}}; // Assuming H=7, D=3
+
+    // Calculate the key matrix
+    int key[SIZE][SIZE];
+    key[0][0] = ((ciphertext[0][0] - ciphertext[1][0]) * 15) % 26; // 15 is the modular inverse of 3-7 mod 26
+    key[0][1] = ((ciphertext[0][0] - (key[0][0] * plaintext[0][0])) + 26) % 26;
+    key[1][0] = ((ciphertext[1][0] - ciphertext[0][0]) * 15) % 26; // 15 is the modular inverse of 7-3 mod 26
+    key[1][1] = ((ciphertext[1][0] - (key[1][0] * plaintext[1][0])) + 26) % 26;
+
+    // Print the key matrix
+    printf("Key Matrix:\n");
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            printf("%d ", key[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
