@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <string.h>
+
+#define ALPHABET_SIZE 26
+
+int main() {
+    char ciphertext[1000];
+    int keyLength, topPlaintexts;
+    printf("Enter the ciphertext: ");
+    fgets(ciphertext, sizeof(ciphertext), stdin);
+    ciphertext[strcspn(ciphertext, "\n")] = '\0'; // Remove newline character
+
+    printf("Enter the length of the key: ");
+    scanf("%d", &keyLength);
+
+    printf("Enter the number of top possible plaintexts: ");
+    scanf("%d", &topPlaintexts);
+
+    int frequencies[ALPHABET_SIZE] = {0};
+    int i, j;
+
+    // Calculate letter frequencies
+    for (i = 0; i < strlen(ciphertext); i++) {
+        char ch = ciphertext[i];
+        if (ch >= 'A' && ch <= 'Z') {
+            frequencies[ch - 'A']++;
+        } else if (ch >= 'a' && ch <= 'z') {
+            frequencies[ch - 'a']++;
+        }
+    }
+
+    // Guess keys based on frequency analysis
+    int key[keyLength];
+    for (i = 0; i < keyLength; i++) {
+        int maxFrequencyIndex = 0;
+        for (j = 1; j < ALPHABET_SIZE; j++) {
+            if (frequencies[j] > frequencies[maxFrequencyIndex]) {
+                maxFrequencyIndex = j;
+            }
+        }
+        key[i] = (maxFrequencyIndex + 'A' - 'E' + ALPHABET_SIZE) % ALPHABET_SIZE; // Assuming 'E' is the most frequent letter in English
+        frequencies[maxFrequencyIndex] = 0; // Reset frequency to avoid duplicate selection
+    }
+
+    // Print top possible plaintexts
+    printf("\nTop %d possible plaintexts:\n", topPlaintexts);
+    for (i = 0; i < topPlaintexts; i++) {
+        char plaintext[1000];
+        for (j = 0; j < strlen(ciphertext); j++) {
+            char ch = ciphertext[j];
+            if (ch >= 'A' && ch <= 'Z') {
+                plaintext[j] = 'A' + (ch - 'A' - key[j % keyLength] + 26) % 26;
+            } else if (ch >= 'a' && ch <= 'z') {
+                plaintext[j] = 'a' + (ch - 'a' - key[j % keyLength] + 26) % 26;
+            } else {
+                plaintext[j] = ch; // Non-alphabetic characters remain unchanged
+            }
+        }
+        plaintext[strlen(ciphertext)] = '\0';
+        printf("%d. %s\n", i + 1, plaintext);
+
+        // Adjust key for the next iteration
+        for (j = 0; j < keyLength; j++) {
+            key[j] = (key[j] - 1 + ALPHABET_SIZE) % ALPHABET_SIZE; // Decrement key
+        }
+    }
+
+    return 0;
+}
