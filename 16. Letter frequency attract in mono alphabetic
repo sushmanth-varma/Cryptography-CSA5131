@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define ALPHABET_SIZE 26
+
+int main() {
+    char ciphertext[1000];
+    int topPlaintexts;
+    printf("Enter the ciphertext: ");
+    fgets(ciphertext, sizeof(ciphertext), stdin);
+    ciphertext[strcspn(ciphertext, "\n")] = '\0'; // Remove newline character
+
+    printf("Enter the number of top possible plaintexts: ");
+    scanf("%d", &topPlaintexts);
+
+    int frequencies[ALPHABET_SIZE] = {0};
+    int i, j;
+
+    // Calculate letter frequencies
+    for (i = 0; i < strlen(ciphertext); i++) {
+        char ch = ciphertext[i];
+        if (ch >= 'A' && ch <= 'Z') {
+            frequencies[ch - 'A']++;
+        } else if (ch >= 'a' && ch <= 'z') {
+            frequencies[ch - 'a']++;
+        }
+    }
+
+    // Guess keys based on frequency analysis
+    int key[ALPHABET_SIZE];
+    for (i = 0; i < ALPHABET_SIZE; i++) {
+        int maxFrequencyIndex = 0;
+        for (j = 1; j < ALPHABET_SIZE; j++) {
+            if (frequencies[j] > frequencies[maxFrequencyIndex]) {
+                maxFrequencyIndex = j;
+            }
+        }
+        key[maxFrequencyIndex] = 'A' + i;
+        frequencies[maxFrequencyIndex] = 0; // Reset frequency to avoid duplicate selection
+    }
+
+    // Print top possible plaintexts
+    printf("\nTop %d possible plaintexts:\n", topPlaintexts);
+    for (int k = 0; k < topPlaintexts; k++) {
+        char plaintext[1000];
+        for (i = 0; i < strlen(ciphertext); i++) {
+            char ch = ciphertext[i];
+            if (ch >= 'A' && ch <= 'Z') {
+                plaintext[i] = key[ch - 'A'];
+            } else if (ch >= 'a' && ch <= 'z') {
+                plaintext[i] = key[ch - 'a'];
+            } else {
+                plaintext[i] = ch; // Non-alphabetic characters remain unchanged
+            }
+        }
+        plaintext[strlen(ciphertext)] = '\0';
+        printf("%d. %s\n", k + 1, plaintext);
+
+        // Adjust key for the next iteration (cyclic permutation)
+        int lastKey = key[ALPHABET_SIZE - 1];
+        for (i = ALPHABET_SIZE - 1; i > 0; i--) {
+            key[i] = key[i - 1];
+        }
+        key[0] = lastKey;
+    }
+
+    return 0;
+}
